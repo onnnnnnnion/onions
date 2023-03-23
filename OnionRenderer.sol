@@ -15,6 +15,8 @@ contract OnionRenderer {
     uint public onionHeadId;
     IERC721AUpgradeable public onionToken;
     INounsDescriptor public descriptor;
+    
+    string public description = "Onions are a generative edition of Onion nouns. Each onion is dynamically generated and personalized to the owner's address. When Onions change wallets, their traits change as well to reflect the new owner.";
 
     constructor(INounsDescriptor _descriptor, IERC721AUpgradeable _onionToken, uint _onionHeadId) {
         _owner = msg.sender;
@@ -57,13 +59,33 @@ contract OnionRenderer {
         require(onionToken.totalSupply() >= _tokenId, "This onion does not exist :'(");
         
         string memory name = string(abi.encodePacked("Onion #", _tokenId.toString()));
-        string memory description = "Onions are a generative edition of Onion nouns. Each onion is dynamically generated and personalized to the owner's address. When Onions change wallets, their traits change as well to reflect the new owner.";
         address onionOwner = onionToken.ownerOf(_tokenId);
 
         return descriptor.genericDataURI(name, description, generateSeed(onionOwner, _tokenId));
     }
 
-    function contractURI() public view returns (string memory) {
+    function contractURI() public view
+      returns (string memory) {   
+        return string(
+            abi.encodePacked(
+                "data:application/json;base64,",
+                Base64.encode(
+                    bytes(
+                        string(
+                            abi.encodePacked(
+                                '{"name": "',
+                                "Onions",
+                                '", "description": "',
+                                description,
+                                '", "image": "',
+                                "https://arweave.net/2nxAL6Bh1oBKB6OXw4xlPLUd07z5XBux0izW23j8wKc",
+                                '"}'
+                            )
+                        )
+                    )
+                )
+            )
+        );
     }
     
     function setDescriptor(INounsDescriptor _newDescriptor) public onlyOwner {
