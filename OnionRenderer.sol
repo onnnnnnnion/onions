@@ -23,6 +23,10 @@ contract OnionRenderer {
         onionHeadId = _onionHeadId;
     }
     
+    modifier onlyOwner() {
+        require(msg.sender == _owner, "Only the owner can call this function.");
+    }   
+    
     function generateSeed(address _address, uint _tokenId) private view returns (INounsSeeder.Seed memory) {
         
         uint256 _pseudorandomness = uint256(keccak256(abi.encodePacked(_address, _tokenId)));
@@ -60,5 +64,13 @@ contract OnionRenderer {
     }
 
     function contractURI() public view returns (string memory) {
+    }
+    
+    function setDescriptor(INounsDescriptor _newDescriptor) public onlyOwner {
+        descriptor = _newDescriptor;
+    }   
+
+    function setOnionHeadId(uint _newOnionHeadId) public onlyOwner {
+        onionHeadId = _newOnionHeadId;
     }
 }
